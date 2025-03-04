@@ -27,6 +27,7 @@ const userRoutes = require('./routes/user');
 const logRoutes = require('./routes/logout');
 const amplifyRoutes = require('./routes/amplify'); // Import amplify routes
 const deleteRoutes = require("./routes/deleteRoutes");
+const front = require("./routes/upload");
 
 app.use(express.static('./'));
 
@@ -36,6 +37,7 @@ app.use("/api/auth", deleteRoutes);
 app.use("/api/auth", amplifyRoutes); // Use amplify routes
 app.use('/api/auth', userRoutes); // User routes
 app.use('/api/auth', logRoutes); // Logout routes
+app.use('/api/auth', front); // Upload routes
 
 // Favicon handling
 app.get('/favicon.ico', (req, res) => res.status(204).end());
