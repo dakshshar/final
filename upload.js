@@ -9,7 +9,7 @@ export default function UploadPage() {
     const formData = new FormData(event.target);
 
     try {
-      const response = await fetch('/api/upload', {
+      const response = await fetch('/routes/amplify.js', {
         method: 'POST',
         body: formData,
       });
