@@ -1,4 +1,4 @@
-"use client"; // Required in Next.js 13+ for client-side components
+"use client"; // Ensures it's a client component
 
 import Link from "next/link";
 
