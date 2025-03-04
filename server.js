@@ -17,6 +17,11 @@ app.use(morgan('dev')); // Log HTTP requests
 // Connect to the database
 connectDB();
 
+// Create the Next.js app
+const dev = process.env.NODE_ENV !== 'production';
+const nextApp = next({ dev });
+const handle = nextApp.getRequestHandler();
+
 // Routes
 const userRoutes = require('./routes/user');
 const logRoutes = require('./routes/logout');
