@@ -34,6 +34,7 @@ nextApp.prepare().then(() => {
   app.use('/api/auth', deleteRoutes);
   app.use('/api/auth', amplifyRoutes); // Use amplify routes
   app.use('/api/auth', userRoutes); // User routes
+  
   app.use('/api/auth', logRoutes); // Logout routes
 
   // Handle Next.js requests
