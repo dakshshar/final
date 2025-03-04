@@ -2,49 +2,48 @@ const express = require('express');
 const colors = require('colors');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const next = require('next'); // Import Next.js
 const connectDB = require('./config/db');
-//const path = require('path');
 
-//dotenv.config({ path: './config/config.env' });
-
-const app = express();
-
-// Middleware
-app.use(express.json({ limit: "500mb" })); // Parse JSON requests
-app.use(express.urlencoded({ limit: "500mb", extended: true, parameterLimit: 100000 })); // Parse URL-encoded requests
-app.use(morgan('dev')); // Log HTTP requests
-
-// Connect to the database
-connectDB();
+// Load environment variables
+dotenv.config();
 
 // Create the Next.js app
 const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
 
-// Routes
-const userRoutes = require('./routes/user');
-const logRoutes = require('./routes/logout');
-const amplifyRoutes = require('./routes/amplify'); // Import amplify routes
-const deleteRoutes = require("./routes/deleteRoutes");
-const front = require("./routes/upload");
+// Connect to the database
+connectDB();
 
-app.use(express.static('./'));
+// Prepare the Next.js app
+nextApp.prepare().then(() => {
+  const app = express();
 
+  // Middleware
+  app.use(express.json({ limit: '500mb' })); // Parse JSON requests
+  app.use(express.urlencoded({ limit: '500mb', extended: true, parameterLimit: 100000 })); // Parse URL-encoded requests
+  app.use(morgan('dev')); // Log HTTP requests
 
-app.use(express.json());
-app.use("/api/auth", deleteRoutes);
-app.use("/api/auth", amplifyRoutes); // Use amplify routes
-app.use('/api/auth', userRoutes); // User routes
-app.use('/api/auth', logRoutes); // Logout routes
-app.use('/api/auth', front); // Upload routes
+  // API Routes
+  const userRoutes = require('./routes/user');
+  const logRoutes = require('./routes/logout');
+  const amplifyRoutes = require('./routes/amplify'); // Import amplify routes
+  const deleteRoutes = require('./routes/deleteRoutes');
 
-// Favicon handling
-app.get('/favicon.ico', (req, res) => res.status(204).end());
-app.get('/favicon.png', (req, res) => res.status(204).end());
+  app.use('/api/auth', deleteRoutes);
+  app.use('/api/auth', amplifyRoutes); // Use amplify routes
+  app.use('/api/auth', userRoutes); // User routes
+  app.use('/api/auth', logRoutes); // Logout routes
 
-// Root route
+  // Handle Next.js requests
+  app.all('*', (req, res) => {
+    return handle(req, res);
+  });
 
-// Define PORT and start server
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`Server running on: ${PORT}`.blue.underline.bold));
+  // Start the server
+  const PORT = process.env.PORT || 8000;
+  app.listen(PORT, () => {
+    console.log(`Server running on: ${PORT}`.blue.underline.bold);
+  });
+});
